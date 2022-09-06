@@ -53,21 +53,26 @@ int main(int argc, char **argv) {
 	printf("What min and max diap of numbers?\n");
 	scanf("%d %d", &min, &max);
 	
+	printf("\x1B[1J");
+	printf("\x1B[1;1H");
+	player_results = malloc(sizeof(int) * players);
+	for (i = 0; i < players; i++) {
+		player_results[i] = malloc(sizeof(int) * numbers_count);
+		printf("player%d\t", i + 1);
+	}
+	printf("\n");
+
 	start_time = time(NULL);
 	srand(start_time);
-	player_results = malloc(sizeof(int) * players);
+
 	while (1) {
 		int j;
-		int has_winner = 0;
+		int winner = 0;
+
+		printf("\x1B[2;1H");
+		printf("\x1B[0J");
 
 		game_tries++;
-
-		for (i = 0; i < players; i++) {
-			player_results[i] = malloc(sizeof(int) * numbers_count);
-			printf("player%d\t", i + 1);
-		}
-
-		printf("\n");
 
 		for (i = 1, j = 0; i <= numbers_count * players; i++) {
 			int dropped_num = rand() % (max - min + 1) + min;
@@ -81,14 +86,17 @@ int main(int argc, char **argv) {
 		}
 		for (i = 0; i < players; i++) {
 			if (arr_is_fully_equal(numbers_count, player_results[i], *player_results[i])) {
-			       printf("player%d is a winner!\n", i + 1);
-			       has_winner = 1;
+			       winner = i + 1;
 			}
-			free(player_results[i]);
 		}
-		if (has_winner)
+		if (winner) {
+			printf("player%d is a winner!\n", winner);
 			break;
+		}
+
 	}
+	printf("\x1B[?25h");
+
 	printf("%lld attempts was made to find a winner\n", game_tries);
 	printf("Time required for complete the task: %lld seconds\n", time(NULL) - start_time);
 	return 0;
